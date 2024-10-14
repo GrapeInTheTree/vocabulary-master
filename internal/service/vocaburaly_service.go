@@ -32,6 +32,6 @@ func GetWordsForExport(filename string, mode string, retryCount int) error {
 	return vocaRepository.GetExportWordsToCSV(filename, mode, retryCount)
 }
 
-func UpdateWord(word, meaning string) error {
-	return vocaRepository.GetUpdateWord(word, meaning)
+func UpdateWord(originalWord, newWord, meaning string) error {
+	return vocaRepository.GetUpdateWord(originalWord, newWord, meaning)
 }
