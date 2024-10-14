@@ -96,9 +96,9 @@ func GetWordsWithMinRetries(minRetries int) ([]vocaModels.Word, error) {
 	return words, nil
 }
 
-func GetUpdateWord(word, meaning string) error {
-	query := `UPDATE words SET meaning = ? WHERE word = ?`
-	_, err := DB.Exec(query, meaning, word)
+func GetUpdateWord(originalWord, newWord, meaning string) error {
+	query := `UPDATE words SET word = ?, meaning = ? WHERE word = ?`
+	_, err := DB.Exec(query, newWord, meaning, originalWord)
 	return err
 }
 

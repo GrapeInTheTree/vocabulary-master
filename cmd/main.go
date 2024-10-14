@@ -181,7 +181,7 @@ func exportWords(c *cli.Context) error {
 	if !c.Bool("all") && !c.IsSet("only-retry") {
 		return fmt.Errorf("please specify either --all or --only-retry option")
 	}
-	
+
 	if c.Bool("all") {
 		return vocaService.GetWordsForExport(fmt.Sprintf("words-%s.csv", time.Now().Format("01-02")), "all", 0)
 	}
@@ -190,10 +190,11 @@ func exportWords(c *cli.Context) error {
 }
 
 func updateWord(c *cli.Context) error {
-	word := c.Args().First()
-	meaning := c.Args().Get(1)
-	if word == "" || meaning == "" {
+	originalWord := c.Args().First()
+	newWord := c.Args().Get(1)
+	meaning := c.Args().Get(2)
+	if originalWord == "" || meaning == "" {
 		return fmt.Errorf("please provide a word and meaning to update")
 	}
-	return vocaService.UpdateWord(word, meaning)
+	return vocaService.UpdateWord(originalWord, newWord, meaning)
 }
