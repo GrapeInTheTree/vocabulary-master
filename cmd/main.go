@@ -139,6 +139,7 @@ func retrieveWords(c *cli.Context) error {
 	return nil
 }
 
+// TODO: add logic to increase retry count if the word is not known
 func studyWords(c *cli.Context) error {
 	if !c.Bool("all") && !c.IsSet("only-retry") {
 		return fmt.Errorf("please specify either --all or --only-retry option")
