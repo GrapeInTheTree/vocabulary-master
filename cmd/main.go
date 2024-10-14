@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/rand/v2"
 	"os"
+	"time"
 
 	vocaModels "github.com/grapeinthetree/vocabulary-master/internal/models"
 	vocaRepository "github.com/grapeinthetree/vocabulary-master/internal/repository"
@@ -69,6 +70,11 @@ func main() {
 						Name:    "only-retry",
 						Aliases: []string{"r"},
 						Usage:   "Only export words with more retries than this",
+					},
+					&cli.BoolFlag{
+						Name:    "all",
+						Aliases: []string{"a"},
+						Usage:   "Export all words",
 					},
 				},
 				Action: exportWords,
@@ -172,16 +178,15 @@ func studyWordList(words []vocaModels.Word) error {
 }
 
 func exportWords(c *cli.Context) error {
+	if !c.Bool("all") && !c.IsSet("only-retry") {
+		return fmt.Errorf("please specify either --all or --only-retry option")
+	}
+	
+	if c.Bool("all") {
+		return vocaService.GetWordsForExport(fmt.Sprintf("words-%s.csv", time.Now().Format("01-02")), "all", 0)
+	}
 	retryCount := c.Int("only-retry")
-	words, err := vocaService.GetWordsForExport(retryCount)
-	if err != nil {
-		return err
-	}
-	fmt.Printf("Exporting words with retry count > %d\n", retryCount)
-	for _, word := range words {
-		fmt.Printf("%s - %s (Retries: %d)\n", word.Word, word.Meaning, word.Retries)
-	}
-	return nil
+	return vocaService.GetWordsForExport(fmt.Sprintf("words-%s-retry-%d.csv", time.Now().Format("01-02"), retryCount), "retry", retryCount)
 }
 
 func updateWord(c *cli.Context) error {

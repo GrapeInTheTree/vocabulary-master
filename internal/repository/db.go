@@ -2,7 +2,11 @@ package repository
 
 import (
 	"database/sql"
+	"encoding/csv"
 	"fmt"
+	"os"
+	"path/filepath"
+
 	vocaModels "github.com/grapeinthetree/vocabulary-master/internal/models"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -92,8 +96,46 @@ func GetWordsWithMinRetries(minRetries int) ([]vocaModels.Word, error) {
 	return words, nil
 }
 
-func UpdateWord(word, meaning string) error {
+func GetUpdateWord(word, meaning string) error {
 	query := `UPDATE words SET meaning = ? WHERE word = ?`
 	_, err := DB.Exec(query, meaning, word)
 	return err
+}
+
+func GetExportWordsToCSV(filename string, mode string, retryCount int) error {
+	var words []vocaModels.Word
+	var err error
+	if mode == "all" {
+		words, err = GetAllWords()
+	} else {
+		words, err = GetWordsWithMinRetries(retryCount)
+	}
+	if err != nil {
+		return fmt.Errorf("failed to get words: %w", err)
+	}
+
+	fullPath := filepath.Join("../data", filename)
+
+	file, err := os.Create(fullPath)
+	if err != nil {
+		return fmt.Errorf("failed to create file: %w", err)
+	}
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	// Write header
+	if err := writer.Write([]string{"Word", "Meaning"}); err != nil {
+		return fmt.Errorf("failed to write header: %w", err)
+	}
+
+	// Write data
+	for _, word := range words {
+		if err := writer.Write([]string{word.Word, word.Meaning}); err != nil {
+			return fmt.Errorf("failed to write word data: %w", err)
+		}
+	}
+
+	return nil
 }

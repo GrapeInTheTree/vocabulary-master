@@ -28,10 +28,14 @@ func GetWordsForStudy(minRetryCount int) ([]vocaModels.Word, error) {
 	return vocaRepository.GetWordsWithMinRetries(minRetryCount)
 }
 
-func GetWordsForExport(minRetryCount int) ([]vocaModels.Word, error) {
+func GetRetryWordsForExport(minRetryCount int) ([]vocaModels.Word, error) {
 	return vocaRepository.GetWordsWithMinRetries(minRetryCount)
 }
 
+func GetWordsForExport(filename string, mode string, retryCount int) error {
+	return vocaRepository.GetExportWordsToCSV(filename, mode, retryCount)
+}
+
 func UpdateWord(word, meaning string) error {
-	return vocaRepository.UpdateWord(word, meaning)
+	return vocaRepository.GetUpdateWord(word, meaning)
 }
