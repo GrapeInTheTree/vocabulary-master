@@ -24,6 +24,10 @@ func RetrieveWordByName(word string) (vocaModels.Word, error) {
 	return vocaRepository.GetWordByName(word)
 }
 
+func RetrieveWordsForToday() ([]vocaModels.Word, error) {
+	return vocaRepository.GetWordsForToday()
+}
+
 func GetWordsForStudy(minRetryCount int) ([]vocaModels.Word, error) {
 	return vocaRepository.GetWordsWithMinRetries(minRetryCount)
 }

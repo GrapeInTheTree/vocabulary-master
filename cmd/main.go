@@ -58,6 +58,11 @@ func main() {
 						Aliases: []string{"a"},
 						Usage:   "Study all words",
 					},
+					&cli.BoolFlag{
+						Name:    "today",
+						Aliases: []string{"t"},
+						Usage:   "Study words for today",
+					},
 				},
 				Action: studyWords,
 			},
@@ -143,14 +148,17 @@ func retrieveWords(c *cli.Context) error {
 // TODO: add logic to increase retry count if the word is not known
 // TODO: add logic to study words per day
 func studyWords(c *cli.Context) error {
-	if !c.Bool("all") && !c.IsSet("only-retry") {
-		return fmt.Errorf("please specify either --all or --only-retry option")
+	if !c.Bool("all") && !c.IsSet("only-retry") && !c.Bool("today") {
+		return fmt.Errorf("please specify either --all or --only-retry or --today option")
 	}
 	var words []vocaModels.Word
 	var err error
 
 	if c.Bool("all") {
 		words, err = vocaService.RetrieveAllWords()
+	} else if c.Bool("today") {
+		// TODO: implement logic to study words for today
+		words, err = vocaService.RetrieveWordsForToday()
 	} else {
 		retryCount := c.Int("only-retry")
 		words, err = vocaService.GetWordsForStudy(retryCount)
