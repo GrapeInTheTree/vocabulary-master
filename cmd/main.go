@@ -94,6 +94,7 @@ func main() {
 	}
 }
 
+// TODO: add logic that if the argument is zero, then it will not store and throw an error
 func storeWords(c *cli.Context) error {
 	fmt.Println("Enter words and meanings to store (type 'exit' to finish):")
 	scanner := bufio.NewScanner(os.Stdin)
@@ -140,6 +141,7 @@ func retrieveWords(c *cli.Context) error {
 }
 
 // TODO: add logic to increase retry count if the word is not known
+// TODO: add logic to study words per day
 func studyWords(c *cli.Context) error {
 	if !c.Bool("all") && !c.IsSet("only-retry") {
 		return fmt.Errorf("please specify either --all or --only-retry option")
