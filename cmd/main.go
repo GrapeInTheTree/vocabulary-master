@@ -146,7 +146,6 @@ func retrieveWords(c *cli.Context) error {
 }
 
 // TODO: add logic to increase retry count if the word is not known
-// TODO: add logic to study words per day
 func studyWords(c *cli.Context) error {
 	if !c.Bool("all") && !c.IsSet("only-retry") && !c.Bool("today") {
 		return fmt.Errorf("please specify either --all or --only-retry or --today option")
