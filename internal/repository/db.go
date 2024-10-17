@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 
 	vocaModels "github.com/grapeinthetree/vocabulary-master/internal/models"
 
@@ -35,7 +36,9 @@ func createTable() error {
 		id TEXT PRIMARY KEY,
 		word TEXT NOT NULL,
 		meaning TEXT NOT NULL,
-		retries INTEGER DEFAULT 0
+		retries INTEGER DEFAULT 0,
+		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		last_modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 	);`
 
 	_, err := DB.Exec(query)
@@ -43,8 +46,8 @@ func createTable() error {
 }
 
 func InsertWord(word vocaModels.Word) error {
-	query := `INSERT INTO words (id, word, meaning, retries) VALUES (?, ?, ?, ?)`
-	_, err := DB.Exec(query, word.ID, word.Word, word.Meaning, word.Retries)
+	query := `INSERT INTO words (id, word, meaning, retries, created_at, last_modified_at) VALUES (?, ?, ?, ?, ?, ?)`
+	_, err := DB.Exec(query, word.ID, word.Word, word.Meaning, word.Retries, word.CreatedAt, word.LastModifiedAt)
 	return err
 }
 
@@ -76,6 +79,26 @@ func GetWordByName(word string) (vocaModels.Word, error) {
 	return w, err
 }
 
+func GetWordsForToday() ([]vocaModels.Word, error) {
+	query := `SELECT id, word, meaning, retries FROM words WHERE date(created_at) = date('now')`
+	rows, err := DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var words []vocaModels.Word
+	for rows.Next() {
+		var w vocaModels.Word
+		err := rows.Scan(&w.ID, &w.Word, &w.Meaning, &w.Retries)
+		if err != nil {
+			return nil, err
+		}
+		words = append(words, w)
+	}
+	return words, nil
+}
+
 func GetWordsWithMinRetries(minRetries int) ([]vocaModels.Word, error) {
 	query := `SELECT id, word, meaning, retries FROM words WHERE retries > ?`
 	rows, err := DB.Query(query, minRetries)
@@ -97,8 +120,8 @@ func GetWordsWithMinRetries(minRetries int) ([]vocaModels.Word, error) {
 }
 
 func GetUpdateWord(originalWord, newWord, meaning string) error {
-	query := `UPDATE words SET word = ?, meaning = ? WHERE word = ?`
-	_, err := DB.Exec(query, newWord, meaning, originalWord)
+	query := `UPDATE words SET word = ?, meaning = ?, last_modified_at = ? WHERE word = ?`
+	_, err := DB.Exec(query, newWord, meaning, time.Now(), originalWord)
 	return err
 }
 

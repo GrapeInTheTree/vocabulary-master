@@ -1,6 +1,8 @@
 package service
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	vocaModels "github.com/grapeinthetree/vocabulary-master/internal/models"
 	vocaRepository "github.com/grapeinthetree/vocabulary-master/internal/repository"
@@ -8,10 +10,12 @@ import (
 
 func StoreWord(word, meaning string) error {
 	newWord := vocaModels.Word{
-		ID:      uuid.New().String(),
-		Word:    word,
-		Meaning: meaning,
-		Retries: 0,
+		ID:             uuid.New().String(),
+		Word:           word,
+		Meaning:        meaning,
+		Retries:        0,
+		CreatedAt:      time.Now(),
+		LastModifiedAt: time.Now(),
 	}
 	return vocaRepository.InsertWord(newWord)
 }
@@ -22,6 +26,10 @@ func RetrieveAllWords() ([]vocaModels.Word, error) {
 
 func RetrieveWordByName(word string) (vocaModels.Word, error) {
 	return vocaRepository.GetWordByName(word)
+}
+
+func RetrieveWordsForToday() ([]vocaModels.Word, error) {
+	return vocaRepository.GetWordsForToday()
 }
 
 func GetWordsForStudy(minRetryCount int) ([]vocaModels.Word, error) {
