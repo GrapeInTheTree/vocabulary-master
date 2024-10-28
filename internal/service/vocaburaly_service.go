@@ -43,3 +43,7 @@ func GetWordsForExport(filename string, mode string, retryCount int) error {
 func UpdateWord(originalWord, newWord, meaning string) error {
 	return vocaRepository.GetUpdateWord(originalWord, newWord, meaning)
 }
+
+func IncrementRetryCount(id string) error {
+	return vocaRepository.GetIncrementRetryCount(id)
+}
