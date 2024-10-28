@@ -162,3 +162,9 @@ func GetExportWordsToCSV(filename string, mode string, retryCount int) error {
 
 	return nil
 }
+
+func GetIncrementRetryCount(id string) error {
+	query := `UPDATE words SET retries = retries + 1, last_modified_at = ? WHERE id = ?`
+	_, err := DB.Exec(query, time.Now(), id)
+	return err
+}
