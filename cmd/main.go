@@ -180,15 +180,15 @@ func studyWordList(words []vocaModels.Word) error {
 		fmt.Printf("Word: %s\n", word.Word)
 		fmt.Print("Press Enter to see the meaning...")
 		bufio.NewReader(os.Stdin).ReadBytes('\n')
-		
+
 		fmt.Printf("Meaning: %s\n", word.Meaning)
 		fmt.Print("Press Enter if you knew it, 'r' if you need to retry this word...")
-		
+
 		input, err := bufio.NewReader(os.Stdin).ReadBytes('\n')
 		if err != nil {
 			return err
 		}
-		
+
 		// 입력값이 'r' 또는 'R'인 경우 retry 카운트 증가
 		if len(input) > 0 && (input[0] == 'r' || input[0] == 'R') {
 			err = vocaService.IncrementRetryCount(word.ID)
@@ -196,6 +196,10 @@ func studyWordList(words []vocaModels.Word) error {
 				return fmt.Errorf("failed to increment retry count: %v", err)
 			}
 			fmt.Printf("Increased retry count for word '%s'\n", word.Word)
+		}
+		// TODO: add logic to quit the study session
+		if len(input) > 0 && (input[0] == 'q' || input[0] == 'Q') {
+			break
 		}
 	}
 	return nil
