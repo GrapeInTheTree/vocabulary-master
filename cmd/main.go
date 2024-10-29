@@ -182,7 +182,7 @@ func studyWordList(words []vocaModels.Word) error {
 		bufio.NewReader(os.Stdin).ReadBytes('\n')
 
 		fmt.Printf("Meaning: %s\n", word.Meaning)
-		fmt.Print("Press Enter if you knew it, 'r' if you need to retry this word...")
+		fmt.Print("Press Enter if you knew it, 'r' if you need to retry this word... (q to quit)")
 
 		input, err := bufio.NewReader(os.Stdin).ReadBytes('\n')
 		if err != nil {
