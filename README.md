@@ -97,7 +97,7 @@ To export words with a minimum retry count:
 To update an existing word:
 
 ```bash
-./vocabulary-master update [word] [new_meaning]
+./vocabulary-master update [original_word] [new_word] [new_meaning]
 ```
 
 
